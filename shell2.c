@@ -1,5 +1,5 @@
 /*
-Mario Mendiola Jr, Terrence Jackson
+Mario Mendiola Jr, Terrence Jackson, Makayla Zacarias, Karla Lara
 Major Assignment 1
 CSCE 3600
 10/25/2017
@@ -96,20 +96,20 @@ int lsh_output_process( char **args )
 		{
 			execvp(args[0], args);  
 			perror("lsh");
-			printf("IN CHILD PROCESS \n"); //(TJ) Checkin to see where error is
+			//printf("IN CHILD PROCESS \n"); //(TJ) Checkin to see where error is
 		}
 		exit(EXIT_FAILURE);
 		
-		printf("This is child process! Process ID : %d \n", getpid());
+		//printf("This is child process! Process ID : %d \n", getpid());
 	} else if (pid < 0) {
 		// Error forking
 		perror("lsh");
-		printf("IN MAKING OF CHILD \n"); //(TJ) Checkin to see where error is
+		//printf("IN MAKING OF CHILD \n"); //(TJ) Checkin to see where error is
 	} else {
 		// Parent process
 		do 
 		{
-			printf("This is parent process! Process ID : %d \n", getpid()); //(TJ) Added this to check stuff 
+			//printf("This is parent process! Process ID : %d \n", getpid()); //(TJ) Added this to check stuff 
 			waitpid(pid, &status, WUNTRACED);	//(TJ) Shouldnt need to do anything other than call the wait, right?
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status)); // exit the loop if the child processed normally
 
@@ -119,11 +119,7 @@ int lsh_output_process( char **args )
   return pid; //(TJ) Return the child process to the parent
 }
 
-
-
-
-
-
+//(TJ)Using this process for some redir testing. Not working i dont think
 int lsh_launch_redir(char **args)
 {
 	
@@ -140,18 +136,18 @@ int lsh_launch_redir(char **args)
 		{
 			execvp(args[0], args);  
 			perror("lsh");
-			printf("IN CHILD PROCESS \n"); //(TJ) Checkin to see where error is
+			//printf("IN CHILD PROCESS \n"); //(TJ) Checkin to see where error is
 		}
 	exit(EXIT_FAILURE);
 	} else if (pid < 0) {
 		// Error forking
 		perror("lsh");
-		printf("IN MAKING OF CHILD \n"); //(TJ) Checkin to see where error is
+		//printf("IN MAKING OF CHILD \n"); //(TJ) Checkin to see where error is
 	} else {
 		// Parent process
 		do 
 		{
-			printf("This is parent process! Process ID : %d \n\n", getpid()); //(TJ) Added this to check stuff 
+			//printf("This is parent process! Process ID : %d \n\n", getpid()); //(TJ) Added this to check stuff 
 			waitpid(pid, &status, WUNTRACED);	//(TJ) Shouldnt need to do anything other than call the wait, right?
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status)); // exit the loop if the child processed normally
 		
@@ -395,18 +391,16 @@ int lsh_launch(char **args)
 		{
 			execvp(args[0], args);  
 			perror("lsh");
-			printf("IN CHILD PROCESS \n"); //(TJ) Checkin to see where error is
 		}
 	exit(EXIT_FAILURE);
 	} else if (pid < 0) {
 		// Error forking
 		perror("lsh");
-		printf("IN MAKING OF CHILD \n"); //(TJ) Checkin to see where error is
 	} else {
 		// Parent process
 		do 
 		{
-			printf("This is parent process! Process ID : %d \n", getpid()); //(TJ) Added this to check stuff 
+			//printf("This is parent process! Process ID : %d \n", getpid()); //(TJ) Added this to check stuff 
 			waitpid(pid, &status, WUNTRACED);	//(TJ) Shouldnt need to do anything other than call the wait, right?
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status)); // exit the loop if the child processed normally
 		
@@ -474,14 +468,13 @@ int lsh_cd ( char **args )
 	//lsh_launch(args); //(TJ) Pretty sure this is what is running the process 
 	if ( args[1] == NULL ) // If there is no directory after cd then error
 	{
-		fprintf( stderr, "lsh: ERROR");
-	}
+		chdir(getenv("HOME"));
+	} // change to home directory if no specific directory is given
 	else
 	{
 		if (chdir( args[1] ) != 0) // changes directory of whatever was put into the arg as long as arg isn't zero
 		{
 			perror("lsh");
-			printf("IN CD \n"); //(TJ) Checkin to see where error is
 		}
 	}
 
@@ -541,11 +534,70 @@ int lsh_output( char **args )
 
 //
 int lsh_input( char **args )
+{}
+
+int lsh_path( char **args )
 {
-	
-	
-	
+	int i,j, found = 0, position=0;
+	char *path[100]; // aray to hold path list
+	char *path1 = getenv("PATH");// path1 equal to current path
+	path[0] = path1; // first slot is always the actual PATH location
+
+
+
+	if (args[1] == NULL)
+	{
+		for (j = 0; j < 100; j++) //go through the entire path array 
+		{
+			printf("PATH : %s\n", path[j]); //print the current path list  (TJ) changed from 
+		}
+	}
+
+	else
+	{
+		
+		//if (args[1] == "+")
+		if(strcmp(args[1], "+") == 0 ) 
+		{
+			for (j = 0; j < 100; j++)
+			{
+				if (path[j] == 0)
+				{
+					path[j] == args[2]; // if the next slot in array is empty, fill it with the path user wants to add, return for further commands
+					return;
+				}
+				else
+				{
+					lsh_path(args); // if the slot is already full, go back through the function until it finds a free slot to put the argument in. 
+				}
+			}
+		}
+		
+		//else if (args[1] == "-")
+		else if (strcmp(args[1], "-") == 0)
+		{
+			for (i = 0; i < 100; i++)
+			{
+				if(path[i] == args[2])
+				{
+					int found = 1;
+					int position = 1;// checks every position in the array and if it finds the word it says it is found and breaks
+					break;
+				}
+			}
+			
+			if (found == 1)
+			{
+				for (i = position; i < 100; i++)
+				{
+					path[i] = path[i+1]; //shifts the array down one after deletion 
+				}
+			}
+		}
+	}
+
 }
+
 
 
 //######################### COMMAND HELPER FUNCTIONS ########################
@@ -556,17 +608,19 @@ int (*func[]) (char **) =
 	&lsh_exit,
 	&lsh_clrscr,
 	&lsh_cd,
-	&lsh_output
+	&lsh_output,
+	&lsh_path
 };
 
 
 // Array of strings of each command label
 char *str[] = 
 {
-	"exit",
-	"clear",
-	"cd",
-	"output"
+	"exit", //	0
+	"clear",//	1
+	"cd",	//	2
+	"output",//	3
+	"path"//	4
 };
 
 
@@ -693,7 +747,7 @@ int lsh_execute( char **args )
 	}
 	
 	// For loop cycles through each argument. Saves us from having to use a big switch statement
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; i++) //(TJ)num_builtins() was where the 3 was
 	{	
 		if ( strcmp( args[i], "exit") == 0 )
 		{
@@ -704,7 +758,7 @@ int lsh_execute( char **args )
 				if( exit_pid == 0 )
 				{
 					//(TJ) Child process for the exit command to be done AFTER parent is done
-					//execvp("exit", args);
+
 					
 					// (TJ) Trying to make this process handle cases that have exit in the command line
 					// Basically run whatever command first before exiting
@@ -714,17 +768,17 @@ int lsh_execute( char **args )
 						if (strcmp(args[j], ">") == 0 )
 						{
 							//return ( *func[3]) (args);
-							//lsh_output( args );
+							lsh_output( args );
 						}
 						//(TJ) If you find a out redirections, call lsh_input
 						else if (strcmp(args[j], "<") == 0 )
 						{
-							
+							lsh_launch( args );
 						}
 						//(TJ) If you find a out redirections, call lsh_append
 						else if (strcmp(args[j], ">>") == 0 )
 						{
-							
+							lsh_launch( args );
 						}
 						else if (strcmp(args[j], "cd") == 0 )
 						{
@@ -751,22 +805,12 @@ int lsh_execute( char **args )
 					perror("lsh");
 				
 				} else //(TJ)else for parent process
-				{ 	
-					
-					//(TJ) Will need to look at piping for these.... processes
-					
-					//(TJ) Inner loop to see if there is a files redirection and other functions
+				{ 
 
-					
-					//(TJ)make a new process for a command that might have run after exit
-					//lsh_launch( args );
-					
-					
-					
 					// (TJ)Runs the exit once we are done (I think you need to run this in the parent)
 					do 
 					{
-						//printf("This is parent process! Process ID : %d | pid : %d \n\n", getpid(), pid); //(TJ) Added this to check stuff 
+						
 						waitpid(exit_pid, &status, WUNTRACED);	//(TJ) Shouldnt need to do anything other than call the wait, right?
 					} while (!WIFEXITED(status) && !WIFSIGNALED(status));
 				}
@@ -783,33 +827,36 @@ int lsh_execute( char **args )
 		}
 		else if (strcmp(args[i], ">") == 0 )
 		{
-			return ( *func[3]) (args);
-			//lsh_output_process( args );
+			//return ( *func[3]) (args);
+			lsh_launch( args );
 		}
 		//(TJ) If you find a out redirections, call lsh_input
 		else if (strcmp(args[i], "<") == 0 )
 		{
-			
+			lsh_launch( args );
 		}
 		//(TJ) If you find a out redirections, call lsh_append
 		else if (strcmp(args[i], ">>") == 0 )
 		{
-			
+			lsh_launch( args );
 		}
 		else if (strcmp(args[i], "cd") == 0 )
 		{
 			return ( *func[2]) (args); //(TJ)hardcoded func[] for cd function
+			lsh_launch( args );
 		}
 		else if (strcmp(args[i], "clear") == 0 )
 		{
 			return ( *func[1]) (args); //(TJ)hardcoded func[] for clear function
 		}
-
+		else if (strcmp(args[i], "path") == 0 )
+		{
+			return ( *func[4]) (args); //(TJ)hardcoded func[] for clear function
+		}
 		else {
 			//If there is not command thats one of ours, do there commands
-			printf("This Launch If None Our Commands Typed\n");
+			//printf("This Launch If None Our Commands Typed\n");
 			lsh_launch( args );
-			//lsh_launch_redir( args ); // (TJ) will have to put a if statement to check this 
 		
 		}
 		
@@ -818,8 +865,6 @@ int lsh_execute( char **args )
 		return 1;
 	}
 //}
-
-	
 	
 	
 	//(TJ) First attempt at making some statements for forking processes
@@ -910,19 +955,14 @@ void lsh_loop(void)
 	
 	
  	//status of the shell, and executes the function (Returns a process i think?)  
-	printf("Pre Execute > \n");	
+	//printf("Pre Execute > \n");	
 	status = lsh_execute(args); //Changed from 'status = lsh_execute(args);'
-	printf("Post Execute > \n");
+	//printf("Post Execute > \n");
 
 
-	
-	
-	//(TJ) Tested the output redir code here
 	
     free(line); //Is there a problem with freeing this here?
     free(args);
-  //(TJ)Changed from 'status' because plan to exit from the spilt processes.
-  //lsh_execute(args) should need ot return to execute
   } while ( status );
 
 }
@@ -941,5 +981,3 @@ int main(int argc, char **argv)
   
   return EXIT_SUCCESS;
 }
-
-
