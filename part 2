@@ -1,0 +1,98 @@
+Part 2
+
+int lsh_cd ( char **args )
+{
+	if ( args[1] == NULL ) //change directory to home directory
+	{
+	
+		chdir(getenv("HOME"));
+	} // change to home directory if no specific directory is given
+	
+	else
+	{
+		if (chdir( args[1] ) != NULL) 
+			perror("lsh");
+		}
+	} // change directory to whatever is typed into args[1]
+	return 1;
+}
+////////////////////////////////////////////////////////////////////////
+
+int lsh_path( char **args )
+{
+int lsh_path( char **args )
+{
+	int i,j, found = 0, position=0;
+	char path[100]; // aray to hold path list
+	char path1 = getenv("PATH");// path1 equal to current path
+	path[0] = path1; // first slot is always the actual PATH location
+
+	
+	
+	if (args[1] == NULL)
+	{
+		for (j = 0; j < 100; j++) //go through the entire path array 
+		{
+			printf("PATH : %d\n", path[j]); //print the current path list 
+		}
+	}
+	
+	else
+	{
+		
+		if (args[1] == "+")
+		{
+			for (j = 0; j < 100; j++)
+			{
+				if (path[j] == 0)
+				{
+					path[j] == args[2]; // if the next slot in array is empty, fill it with the path user wants to add, return for further commands
+					return;
+				}
+				else
+				{
+					lsh_path(args); // if the slot is already full, go back through the function until it finds a free slot to put the argument in. 
+				}
+			}
+		}
+		
+		else if (args[1] == "-")
+		{
+			for (i = 0; i < 100; i++)
+			{
+				if(path[i] == args[2])
+				{
+					int found = 1;
+					int position = 1;// checks every position in the array and if it finds the word it says it is found and breaks
+					break;
+				}
+			}
+			
+			if (found == 1)
+			{
+				for (i = position; i < 100; i++)
+				{
+					path[i] = path[i+1]; //shifts the array down one after deletion 
+				}
+			}
+		}
+	}
+	
+	
+}
+
+		
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+int lsh_exit(char **args)
+{
+	int exit_check = 0;
+	exit_check = exit_check +1; // tells the program there is an exit somewhere in the line
+}
+	
+	///This part would not go in the exit_check function, I'm not sure where to put it in the code. But it should go after the last argument is read in. 
+  if (exit_check >=1)
+  {	  printf("Exiting\n");
+	  exit(0);//exits after all other commands were implemented
+  }
